@@ -52,7 +52,7 @@ class SimpleRedisBackend(Backend):
 
         current = self.pipeline.get(key).execute()[0]
         if current is not None:
-            current = int(current)
+            current = min(int(current), limit)
 
         limit_exceeded = True
         if current is None or current < limit:
