@@ -59,6 +59,10 @@ class TestSimpleRedisBackend(FlaskTestCase):
         self.assertEqual(remaining, 1)
 
         limit_exceeded, remaining, reset = b.update('redis_backend', 3, 5)
+        self.assertEqual(limit_exceeded, False)
+        self.assertEqual(remaining, 0)
+
+        limit_exceeded, remaining, reset = b.update('redis_backend', 3, 5)
         self.assertEqual(limit_exceeded, True)
         self.assertEqual(remaining, 0)
 
@@ -96,6 +100,11 @@ class TestFlaskCacheRedisBackend(FlaskTestCase):
             'flask_cache_backend', 3, 5)
         self.assertEqual(limit_exceeded, False)
         self.assertEqual(remaining, 1)
+
+        limit_exceeded, remaining, reset = r.backend.update(
+            'flask_cache_backend', 3, 5)
+        self.assertEqual(limit_exceeded, False)
+        self.assertEqual(remaining, 0)
 
         limit_exceeded, remaining, reset = r.backend.update(
             'flask_cache_backend', 3, 5)

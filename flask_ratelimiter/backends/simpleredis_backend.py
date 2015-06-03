@@ -50,6 +50,10 @@ class SimpleRedisBackend(Backend):
         reset = (int(time.time()) // per) * per + per
         key = key_prefix + str(reset)
 
+        val = self.pipeline.get(key).execute()[0]
+        if val is not None and val >= limit:
+
+
         self.pipeline.incr(key)
         self.pipeline.expireat(key, reset + self.expiration_window)
         current = min(self.pipeline.execute()[0], limit)
