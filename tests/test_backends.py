@@ -48,8 +48,8 @@ class TestSimpleRedisBackend(FlaskTestCase):
     def test_backend(self):
         """Test simple redis backend."""
         b = SimpleRedisBackend(host=environ.get('REDIS_HOST', 'localhost'))
-        self.assertIsNot(b.redis, None)
-        self.assertEqual(b.pipeline.__class__.__name__, 'Pipeline')
+        self.assertIsNot(b.cache, None)
+        self.assertEqual(b.get_pipeline().__class__.__name__, 'Pipeline')
 
         limit_exceeded, remaining, reset = b.update('redis_backend', 3, 5)
         self.assertEqual(limit_exceeded, False)

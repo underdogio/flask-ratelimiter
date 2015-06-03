@@ -22,7 +22,11 @@ class FlaskCacheRedisBackend(SimpleRedisBackend):
 
     def __init__(self, cache=None, **kwargs):
         """Store Flask-Cache instance."""
-        self.cache = cache
-        if self.cache.__class__.__name__ != 'Cache':
+        if cache.__class__.__name__ != 'Cache':
             raise ValueError('Incorrect cache was passed as an argument')
+        self.cache = cache.cache._client
         super(SimpleRedisBackend, self).__init__(**kwargs)
+
+    def get_pipeline(self):
+        """Retrieve a pipeline for Flask-Cache"""
+        return self.cache.pipeline()
