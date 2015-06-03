@@ -40,8 +40,9 @@ class TestSimpleRedisBackend(FlaskTestCase):
 
     def setUp(self):
         """Set up for tests."""
-        redis.StrictRedis(host=environ.get('REDIS_HOST',
-                                           'localhost')).flushdb()
+        self.redis = redis.StrictRedis(host=environ.get('REDIS_HOST',
+                                                        'localhost'))
+        self.redis.flushdb()
         super(TestSimpleRedisBackend, self).setUp()
 
     def test_backend(self):
@@ -65,6 +66,11 @@ class TestSimpleRedisBackend(FlaskTestCase):
         limit_exceeded, remaining, reset = b.update('redis_backend', 3, 5)
         self.assertEqual(limit_exceeded, True)
         self.assertEqual(remaining, 0)
+
+        # Assert that we don't increase past 3 despite there being 4 requests
+        keys = self.redis.keys()
+        self.assertEqual(len(keys), 1)
+        self.assertEqual(self.redis.get(keys[0]), '3')
 
 
 class TestFlaskCacheRedisBackend(FlaskTestCase):
