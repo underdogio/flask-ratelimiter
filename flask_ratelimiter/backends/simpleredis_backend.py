@@ -30,8 +30,7 @@ class SimpleRedisBackend(Backend):
     def __init__(self, **kwargs):
         """Create Redis connetion instance."""
         super(SimpleRedisBackend, self).__init__(**kwargs)
-        self.redis = Redis(**kwargs)
-        self.pipeline = self.redis.pipeline()
+        self.cache = Redis(**kwargs)
 
     def update(self, key_prefix, limit, per):
         """Update database for specific key_prefix.
@@ -50,16 +49,17 @@ class SimpleRedisBackend(Backend):
         reset = (int(time.time()) // per) * per + per
         key = key_prefix + str(reset)
 
-        current = self.pipeline.get(key).execute()[0]
+        current = self.cache.get(key)
         if current is not None:
             current = min(int(current), limit)
 
         limit_exceeded = True
         if current is None or current < limit:
             limit_exceeded = False
-            self.pipeline.incr(key)
-            self.pipeline.expireat(key, reset + self.expiration_window)
-            current = min(self.pipeline.execute()[0], limit)
+            pipeline = self.cache.pipeline()
+            pipeline.incr(key)
+            pipeline.expireat(key, reset + self.expiration_window)
+            current = min(pipeline.execute()[0], limit)
 
         remaining = limit - current
         return limit_exceeded, remaining, reset

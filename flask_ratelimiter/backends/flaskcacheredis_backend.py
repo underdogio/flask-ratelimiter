@@ -25,5 +25,4 @@ class FlaskCacheRedisBackend(SimpleRedisBackend):
         self.cache = cache
         if self.cache.__class__.__name__ != 'Cache':
             raise ValueError('Incorrect cache was passed as an argument')
-        self.pipeline = self.cache.cache._client.pipeline()
         super(SimpleRedisBackend, self).__init__(**kwargs)
