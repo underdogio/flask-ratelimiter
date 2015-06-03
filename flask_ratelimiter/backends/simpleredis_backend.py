@@ -54,7 +54,6 @@ class SimpleRedisBackend(Backend):
             current = min(int(current), limit)
 
         limit_exceeded = True
-        print current
         if current is None or current < limit:
             limit_exceeded = False
             pipeline = self.cache.pipeline()
