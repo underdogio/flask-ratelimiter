@@ -32,10 +32,6 @@ class SimpleRedisBackend(Backend):
         super(SimpleRedisBackend, self).__init__(**kwargs)
         self.cache = Redis(**kwargs)
 
-    def get_pipeline(self):
-        """Retrieve a pipeline for Redis"""
-        return self.cache.pipeline()
-
     def update(self, key_prefix, limit, per):
         """Update database for specific key_prefix.
 
@@ -61,7 +57,7 @@ class SimpleRedisBackend(Backend):
         print current
         if current is None or current < limit:
             limit_exceeded = False
-            pipeline = self.get_pipeline()
+            pipeline = self.cache.pipeline()
             pipeline.incr(key)
             pipeline.expireat(key, reset + self.expiration_window)
             current = min(pipeline.execute()[0], limit)
