@@ -69,7 +69,7 @@ class TestSimpleRedisBackend(FlaskTestCase):
         # Assert that we don't increase past 3 despite there being 4 requests
         keys = self.redis.keys()
         self.assertEqual(len(keys), 1)
-        self.assertEqual(self.redis.get(keys[0]), '3')
+        self.assertEqual(self.redis.get(keys[0]).decode('utf-8'), '3')
 
 
 class TestFlaskCacheRedisBackend(FlaskTestCase):
