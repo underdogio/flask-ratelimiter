@@ -88,10 +88,14 @@ class RateLimiter(object):
     def __init__(self, app=None, backend=None):
         """Create extension instance."""
         if app is not None:
-            self.init_app(app, backend)
+            self.init_app(app, backend=backend)
 
     def init_app(self, app, backend=None):
-        """Initialize a Flask extension."""
+        """Initialize a Flask extension.
+
+        .. versionchanged:: 0.3
+           Added ``backend`` argument with already initialized backend.
+        """
         self.app = app
 
         if not hasattr(app, 'extensions'):
